@@ -2,11 +2,8 @@
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
   (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
     (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 
@@ -30,6 +27,14 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(defun load-directory (dir)
+  (let ((load-it (lambda (f)
+		   (load-file (concat (file-name-as-directory dir) f)))
+		 ))
+    (mapc load-it (directory-files dir nil "\\.el$"))))
+
+(load-directory "~/.config/emacs/lisp")
+
 (use-package emacs
   :init
   (setq sentence-end-double-space nil)
@@ -46,31 +51,59 @@
 (use-package projectile
   :ensure t
   :straight t
-  :init
-  (projectile-mode +1)
+  :init (projectile-mode +1)
   :bind (:map projectile-mode-map
-              ("s-p" . projectile-command-map)
               ("C-c p" . projectile-command-map)))
 
-(use-package selectrum
+(use-package consult
+  :ensure t
+  :straight t)
+
+
+(use-package orderless
   :ensure t
   :straight t
   :init
-  (selectrum-mode +1))
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package vertico
+  :ensure t
+  :straight t
+  :init
+  (vertico-mode +1))
 
 (use-package marginalia
   :ensure t
   :straight t
-  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
-  ;; available in the *Completions* buffer, add it to the
-  ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle))
-
-  :init
-  (marginalia-mode))
+  :init (marginalia-mode))
 
 (use-package expand-region
   :ensure t
   :straight t
   :bind ("C-@" . er/expand-region))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :straight t
+  :hook (prog-mode . rainbow-delimiters-mode)
+  :config
+  
+  (set-face-attribute 'rainbow-delimiters-base-face nil :bold t)
+  (set-face-attribute 'rainbow-delimiters-unmatched-face nil :bold t :foreground "white" :background "red")
+  (set-face-attribute 'rainbow-delimiters-mismatched-face nil :bold t :foreground "black" :background "yellow"))
+
+
+(use-package magit
+  :ensure t
+  :straight t
+  :commands magit-status
+  :bind (("C-x g" . magit-status))
+  :config
+  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
