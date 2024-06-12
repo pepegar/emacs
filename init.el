@@ -99,7 +99,6 @@
   (set-face-attribute 'rainbow-delimiters-unmatched-face nil :bold t :foreground "white" :background "red")
   (set-face-attribute 'rainbow-delimiters-mismatched-face nil :bold t :foreground "black" :background "yellow"))
 
-
 (use-package magit
   :ensure t
   :straight t
@@ -107,3 +106,10 @@
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package git-gutter
+  :ensure t
+  :straight t
+  :hook (prog-mode . git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.02))
