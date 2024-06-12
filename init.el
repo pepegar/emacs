@@ -1,40 +1,3 @@
-(require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (when (< emacs-major-version 24)
-    (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
-(package-initialize)
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(defun load-directory (dir)
-  (let ((load-it (lambda (f)
-		   (load-file (concat (file-name-as-directory dir) f)))
-		 ))
-    (mapc load-it (directory-files dir nil "\\.el$"))))
-
-(load-directory "~/.config/emacs/lisp")
-
 (use-package emacs
   :init
   (electric-pair-mode)
@@ -51,7 +14,33 @@
   (setq read-process-output-max (* 1024 1024))
   (setq sentence-end-double-space nil)
   (setq use-short-answers t)
-  )
+  (set-frame-font "PragmataPro 15" nil t)
+
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+	 (expand-file-name
+          "straight/repos/straight.el/bootstrap.el"
+          (or (bound-and-true-p straight-base-dir)
+              user-emacs-directory)))
+	(bootstrap-version 7))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  (defun load-directory (dir)
+    (let ((load-it (lambda (f)
+		     (load-file (concat (file-name-as-directory dir) f)))
+		   ))
+      (mapc load-it (directory-files dir nil "\\.el$"))))
+
+  (load-directory "~/.config/emacs/lisp"))
+
+(use-package diminish :ensure t :straight t)
 
 
 (use-package projectile
@@ -69,9 +58,6 @@
   :ensure t
   :straight t
   :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
@@ -81,6 +67,11 @@
   :straight t
   :init
   (vertico-mode +1))
+
+(use-package vertico-posframe
+  :ensure t
+  :straight t
+  :config (vertico-posframe-mode 1))
 
 (use-package marginalia
   :ensure t
@@ -108,13 +99,12 @@
   :ensure t
   :straight t
   :commands magit-status
-  :bind (("C-x g" . magit-status))
-  :config
-  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+  :bind (("C-x g" . magit-status)))
 
 (use-package git-gutter
   :ensure t
   :straight t
+  :diminish git-gutter-mode
   :hook (prog-mode . git-gutter-mode)
   :config
   (setq git-gutter:update-interval 0.02))
@@ -123,3 +113,16 @@
   :ensure t
   :straight t
   :if (display-graphic-p))
+
+(use-package rg
+  :ensure t
+  :straight t
+  :config
+  (rg-enable-default-bindings))
+
+(use-package exec-path-from-shell
+  :ensure t
+  :straight t
+  :config
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize)))
