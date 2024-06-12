@@ -37,16 +37,22 @@
 
 (use-package emacs
   :init
-  (setq sentence-end-double-space nil)
-  (setq inhibit-startup-message t)
-  (setq visible-bell t)
-
-  (tool-bar-mode -1)
+  (electric-pair-mode)
+  (global-display-line-numbers-mode t)
   (menu-bar-mode -1)
   (scroll-bar-mode -1)
-  (global-display-line-numbers-mode t)
-  (electric-pair-mode)
+  (set-default-coding-systems 'utf-8-unix)
+  (set-language-environment "UTF-8")
+  (tool-bar-mode -1)
+  (setq confirm-kill-processes nil)
+  (setq gc-cons-threshold 100000000)
+  (setq inhibit-startup-message t)
+  (setq lsp-idle-delay 0.500)
+  (setq read-process-output-max (* 1024 1024))
+  (setq sentence-end-double-space nil)
+  (setq use-short-answers t)
   )
+
 
 (use-package projectile
   :ensure t
@@ -58,7 +64,6 @@
 (use-package consult
   :ensure t
   :straight t)
-
 
 (use-package orderless
   :ensure t
@@ -113,3 +118,8 @@
   :hook (prog-mode . git-gutter-mode)
   :config
   (setq git-gutter:update-interval 0.02))
+
+(use-package all-the-icons
+  :ensure t
+  :straight t
+  :if (display-graphic-p))
