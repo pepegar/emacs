@@ -57,6 +57,8 @@ flycheck_*.el
 eln-cache
 projectile-bookmarks.eld
 straight
-.cache/
+.cache
 .lsp-session-v1
-url/
+url
+transient
+tree-sitter
