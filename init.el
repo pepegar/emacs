@@ -74,18 +74,7 @@
 
   :init (global-corfu-mode))
 
-(use-package projectile
-  :ensure t
-  :straight t
-  :init (projectile-mode +1)
-  :bind (:map projectile-mode-map
-              ("C-c p" . projectile-command-map)))
-
 (use-package consult
-  :ensure t
-  :straight t)
-
-(use-package consult-projectile
   :ensure t
   :straight t)
 
