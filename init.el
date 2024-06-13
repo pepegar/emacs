@@ -14,7 +14,12 @@
   (setq read-process-output-max (* 1024 1024))
   (setq sentence-end-double-space nil)
   (setq use-short-answers t)
-  (set-frame-font "PragmataPro 15" nil t)
+  (set-frame-font "PragmataPro 17" nil t)
+  (setq create-lockfiles nil)
+
+  (setq tab-always-indent 'complete)
+  (setq text-mode-ispell-word-completion nil)
+  (setq read-extended-command-predicate #'command-completion-default-include-p)
 
   (defvar bootstrap-version)
   (let ((bootstrap-file
