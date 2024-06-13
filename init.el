@@ -126,23 +126,17 @@
   :ensure t
   :straight t
   :config
-  (define-fringe-bitmap 'me/diff-hl-insert [240] nil nil '(center t))
-  (define-fringe-bitmap 'me/diff-hl-change [240] nil nil '(center t))
-  (define-fringe-bitmap 'me/diff-hl-delete (make-vector 6 240) nil nil 'top)
-  ;; (with-eval-after-load 'magit
-  ;;   (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
-  ;;   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
+  (with-eval-after-load 'magit
+     (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+     (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
   :custom
-  (diff-hl-fringe-bmp-function #'me/diff-hl-fringe-bitmap)
   (diff-hl-show-staged-changes nil)
   :hook
   ((prog-mode text-mode) . diff-hl-mode)
   (diff-hl-mode . diff-hl-flydiff-mode)
   (dired-mode . diff-hl-dired-mode)
-  :preface
-  (defun me/diff-hl-fringe-bitmap (type _position)
-    "Return the name of the bitmap to use for a given change TYPE."
-    (intern (format "me/diff-hl-%s" type))))
+  :bind (("s-n"         . diff-hl-next-hunk)
+         ("s-p"         . diff-hl-previous-hunk)))
 
 (use-package all-the-icons
   :ensure t
