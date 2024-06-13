@@ -21,3 +21,7 @@
 (use-package jsonnet-mode
   :ensure t
   :straight t)
+
+(use-package eglot
+  :custom
+  (eglot-connect-timeout (* 30 60)))

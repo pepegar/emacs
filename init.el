@@ -75,10 +75,16 @@
   :ensure t
   :straight t)
 
+(use-package consult-projectile
+  :ensure t
+  :straight t)
+
 (use-package orderless
   :ensure t
   :straight t
   :init
+  (icomplete-mode)
+  :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
@@ -88,11 +94,6 @@
   :straight t
   :init
   (vertico-mode +1))
-
-(use-package vertico-posframe
-  :ensure t
-  :straight t
-  :config (vertico-posframe-mode 1))
 
 (use-package marginalia
   :ensure t
@@ -122,13 +123,27 @@
   :commands magit-status
   :bind (("C-x g" . magit-status)))
 
-(use-package git-gutter
+(use-package diff-hl
   :ensure t
   :straight t
-  :diminish git-gutter-mode
-  :hook (prog-mode . git-gutter-mode)
   :config
-  (setq git-gutter:update-interval 0.02))
+  (define-fringe-bitmap 'me/diff-hl-insert [240] nil nil '(center t))
+  (define-fringe-bitmap 'me/diff-hl-change [240] nil nil '(center t))
+  (define-fringe-bitmap 'me/diff-hl-delete (make-vector 6 240) nil nil 'top)
+  ;; (with-eval-after-load 'magit
+  ;;   (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+  ;;   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
+  :custom
+  (diff-hl-fringe-bmp-function #'me/diff-hl-fringe-bitmap)
+  (diff-hl-show-staged-changes nil)
+  :hook
+  ((prog-mode text-mode) . diff-hl-mode)
+  (diff-hl-mode . diff-hl-flydiff-mode)
+  (dired-mode . diff-hl-dired-mode)
+  :preface
+  (defun me/diff-hl-fringe-bitmap (type _position)
+    "Return the name of the bitmap to use for a given change TYPE."
+    (intern (format "me/diff-hl-%s" type))))
 
 (use-package all-the-icons
   :ensure t
