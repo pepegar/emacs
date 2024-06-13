@@ -49,6 +49,14 @@
 
 (use-package diminish :ensure t :straight t)
 
+(use-package multiple-cursors
+  :ensure t
+  :straight t
+  :bind (("C->"         . mc/mark-next-like-this)
+         ("C-<"         . mc/mark-previous-like-this)
+         ("C-*"         . mc/mark-all-like-this)
+         ("C-c C-<"     . mc/mark-all-like-this)))
+
 (use-package corfu
   :ensure t
   :straight t
