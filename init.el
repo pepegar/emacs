@@ -16,6 +16,8 @@
   (setq use-short-answers t)
   (set-frame-font "PragmataPro 17" nil t)
   (setq create-lockfiles nil)
+  (setq truncate-lines t)
+  (load-theme 'modus-vivendi t)
 
   (setq tab-always-indent 'complete)
   (setq text-mode-ispell-word-completion nil)
