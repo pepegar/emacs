@@ -63,3 +63,6 @@ url
 transient
 tree-sitter
 projects
+persist
+request
+.mc-lists.el

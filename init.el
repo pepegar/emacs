@@ -74,6 +74,11 @@
 
   :init (global-corfu-mode))
 
+(use-package envrc
+  :ensure t
+  :straight t
+  :hook (after-init . envrc-global-mode))
+
 (use-package consult
   :ensure t
   :straight t)
@@ -119,8 +124,28 @@
 (use-package magit
   :ensure t
   :straight t
-  :commands magit-status
-  :bind (("C-x g" . magit-status)))
+  :bind ("C-c g" . magit-status)
+  :init
+  (use-package with-editor :ensure t)
+
+  ;; Have magit-status go full screen and quit to previous
+  ;; configuration.  Taken from
+  ;; http://whattheemacsd.com/setup-magit.el-01.html#comment-748135498
+  ;; and http://irreal.org/blog/?p=2253
+  (defadvice magit-status (around magit-fullscreen activate)
+    (window-configuration-to-register :magit-fullscreen)
+    ad-do-it
+    (delete-other-windows))
+  (defadvice magit-quit-window (after magit-restore-screen activate)
+    (jump-to-register :magit-fullscreen))
+  :config
+  (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent))
+
 
 (use-package diff-hl
   :ensure t
@@ -155,3 +180,20 @@
   :config
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
+
+(use-package exercism
+  :ensure t
+  :straight t
+  :commands exercism
+  :config
+  (defun my-eval-and-run-all-tests-in-buffer ()
+    "Deletes all loaded tests from the runtime, evaluates the current buffer and runs all loaded tests with ert."
+    (interactive)
+    (ert-delete-all-tests)
+    (eval-buffer)
+    (ert 't)))
+
+(use-package yasnippet
+  :ensure t
+  :straight t
+  :config (yas-global-mode 1))
