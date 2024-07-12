@@ -197,3 +197,7 @@
   :ensure t
   :straight t
   :config (yas-global-mode 1))
+
+(use-package project
+  :bind
+  (("C-x p g" . consult-ripgrep)))
